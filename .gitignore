@@ -1,0 +1,36 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Jupyter Notebook / IPython
+.ipynb_checkpoints/
+profile_default/
+ipython_config.py
+
+# System files & IDEs
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Agent metadata & temporary files
+.agent/
+.codex/
+.kilocode/
+.opencode/
+
+# Project-specific ignores
+openspec/
+commit.sh
+AGENTS.md
