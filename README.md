@@ -1,87 +1,94 @@
-# ⚡ VoltTransit — Bidirectional Bus Charging Scheduler
+# ⚡ VoltTransit — Bus Charging Scheduler
 
-VoltTransit is a state-of-the-art simulation, scheduling, and visualization system for managing electric bus fleets and resolving charging station contention. It models bidirectional transit routes with shared intermediate chargers, physical battery range constraints, and FCFS queue scheduling. It includes a beautiful interactive Streamlit dashboard allowing users to select scenarios and dynamically tune optimization weights on the fly.
+This is my take-home submission for the SDE assessment. I built a scheduling engine for electric buses running a bidirectional route between Bengaluru and Kochi, with 4 shared charging stations along the way.
 
-## 🚀 Getting Started
+The core challenge was making sure every bus gets a valid charging plan — never running out of battery, always visiting stations in travel order — while also resolving contention when multiple buses want to charge at the same station around the same time.
 
-### Prerequisites
-- Python 3.9 or higher
+## 🔗 Live App
 
-### Installation & Setup
+👉 **[Open on Streamlit Cloud](<your-streamlit-url-here>)**
 
-1. **Clone the repository** (if not already inside it):
-   ```bash
-   git clone <repo-url>
-   cd bus-charging-scheduler
-   ```
+---
 
-2. **Create and activate a virtual environment**:
-   ```bash
-   python3 -m venv .venv
-   source .venv/bin/activate
-   ```
+## What I Built
 
-3. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
+**The Scheduler** (`scheduler/` folder)
 
-### Running the Application Locally
+The engine works by generating all physically valid charging plans for each bus (combinations of stations that satisfy the range and sequence constraints), simulating each plan against the current queue state, scoring them using three soft metrics, and committing the best one. Buses are processed in departure-time order so earlier buses get priority — which naturally implements FCFS without any special-casing.
 
-Start the Streamlit development server:
+The three soft metrics — individual wait time, operator fleet consistency, and overall network time — each plug in as independent `SoftScorer` classes. Their weights come from the scenario file (or the sidebar sliders in the UI), so nothing is hardcoded.
+
+Hard constraints (range and no-backtracking) and soft scorers are both pluggable interfaces. Adding a new rule is just writing a new class — no changes to the core engine.
+
+**The UI** (`app.py`)
+
+A Streamlit dashboard with three tabs:
+- **Per-Bus Timetable** — see every bus's departure, charging stops, wait times, and final arrival
+- **Per-Station Queues** — see the exact order buses charged at each of the 4 stations, with timestamps and wait times
+- **Scenario Inputs** — the raw JSON config and fleet departure table, so reviewers can see exactly what went in
+
+The sidebar has sliders to tune the 3 weights live — the simulation reruns instantly as you drag them.
+
+**The Scenarios** (`scenarios/` folder)
+
+5 scenarios to test different real-world conditions:
+1. **Even Spacing** — baseline, buses every 15 minutes
+2. **Bunched Start** — many buses departing close together (high contention)
+3. **Asymmetric Load** — more buses in one direction than the other
+4. **Operator-Heavy** — operator coordination weight cranked up
+5. **Worst Case Convergence** — buses converging on stations simultaneously from both directions
+
+---
+
+## Running It Locally
+
 ```bash
+# Clone and enter the repo
+git clone <repo-url>
+cd bus-charging-scheduler
+
+# Create a virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
+
+# Install dependencies (just streamlit and pandas)
+pip install -r requirements.txt
+
+# Run the app
 streamlit run app.py
 ```
-This will automatically open the application in your default web browser (usually at `http://localhost:8501`).
 
-### Running the Validation Tests
+Opens at `http://localhost:8501`.
 
-Execute our comprehensive correctness validation test suite:
+To run the test suite (validates all 5 scenarios against all 4 hard rules):
 ```bash
 python -m unittest scheduler.tests
 ```
 
 ---
 
-## ⚙️ How to Tune and Extend
+## Repo Structure
 
-### 1. Changing Scenario Parameters & Adding Stations
-All simulation assets—such as station counts, chargers per station, segment distances, fleets, and default weights—are entirely **data-driven** and parsed from scenario JSON configuration files in the `scenarios/` directory.
-
-To add a new station or double chargers at a station, simply modify the `"network"` structure of the desired scenario file:
-```json
-"stations": [
-  {"id": "A", "name": "Station A", "chargers": 2, "charging_time_minutes": 25}
-]
 ```
-The scheduling engine and Streamlit UI will instantly pick up the modifications without a single line of code change!
-
-### 2. Tuning Scorer Weights
-You can adjust the weights of the soft constraints to produce different schedules:
-- **Locally in the UI**: Drag the interactive sliders in the sidebar to re-run the simulation instantly.
-- **As defaults in data**: Set the default coefficients inside the `"weights"` dictionary of the scenario's JSON file:
-  ```json
-  "weights": {
-    "individual": 1.0,
-    "operator": 2.0,
-    "overall": 1.0
-  }
-  ```
-
-### 3. Adding a New Rule (Extensibility)
-VoltTransit is designed with pluggable hard and soft constraint registries. Adding a new rule is as simple as writing a single class and registering it:
-
-1. **Hard Constraints**: Create a subclass of `HardConstraint` in `scheduler/constraints.py` and implement `is_valid`. Then, append it to `self.hard_constraints` in `SchedulerEngine.__init__`.
-2. **Soft Scorers**: Create a subclass of `SoftScorer` in `scheduler/scorers.py` and implement `score`. Then, append it to `self.soft_scorers` with its weight in `SchedulerEngine.__init__`.
-
-For a concrete code walkthrough, see [ARCHITECTURE.md](file:///Users/salauddin/Projects/learning/assigments/bus-charging-schuduler/ARCHITECTURE.md).
+├── app.py                  # Streamlit UI
+├── scheduler/
+│   ├── engine.py           # Core scheduling logic
+│   ├── constraints.py      # Hard constraint interfaces + implementations
+│   ├── scorers.py          # Soft scorer interfaces + implementations
+│   └── models.py           # Route, Bus, Station data structures
+├── scenarios/              # 5 scenario JSON files
+├── requirements.txt
+├── ARCHITECTURE.md         # Design decisions and extensibility guide
+└── assessment_requirements.md  # Full PDF requirements in markdown
+```
 
 ---
 
-## ☁️ Deploying to Streamlit Community Cloud
+## Extending It
 
-Deploying this app is completely free and takes only two clicks:
-1. Push this repository to your public GitHub account.
-2. Go to [share.streamlit.io](https://share.streamlit.io/) and log in with your GitHub account.
-3. Click **"New App"**, select this repository, select the `main` branch, set the file path to `app.py`, and click **"Deploy"**!
-Streamlit will automatically read `requirements.txt`, install all dependencies, and host your interactive app on a public URL.
+To add a new station — just add it to the `"stations"` and `"segments"` arrays in any scenario JSON. The engine picks it up automatically.
+
+To add a new scheduling rule — subclass `HardConstraint` or `SoftScorer` in the relevant file, implement the single required method, and register it in `SchedulerEngine.__init__`. That's it.
+
+For more detail on the design decisions, see [ARCHITECTURE.md](ARCHITECTURE.md).
+

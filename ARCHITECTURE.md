@@ -63,7 +63,41 @@ The architecture is designed to handle key operational changes **strictly throug
 
 ---
 
-## 4. Code Examples for Extending Rules
+## 4. How to Change a Weight
+
+Weights are the simplest thing to change. They live in one place — the `"weights"` dictionary of the scenario JSON file:
+
+```json
+{
+  "weights": {
+    "individual": 1.0,
+    "operator": 2.0,
+    "overall": 0.5
+  }
+}
+```
+
+That's it. The engine reads them at runtime and applies them as multipliers to each scorer. No code changes needed.
+
+If you want to change a weight interactively without touching files, drag the sliders in the Streamlit sidebar — the simulation reruns immediately with the new values.
+
+If you want to add a *new* weight category (e.g., a tariff weight for a new solar scorer), add the key to the JSON and pass it to the scorer in `SchedulerEngine.__init__`:
+
+```python
+# In engine.py → SchedulerEngine.__init__
+self.soft_scorers = [
+    (IndividualWaitScorer(),     self.weights.get("individual", 1.0)),
+    (OperatorFleetScorer(),      self.weights.get("operator",   1.0)),
+    (OverallNetworkTimeScorer(), self.weights.get("overall",    1.0)),
+    (SolarTariffScorer(),        self.weights.get("solar",      1.5)),  # ← new
+]
+```
+
+One line. The weight is read from the JSON, with a sensible default if the key is absent.
+
+---
+
+## 5. Code Examples for Extending Rules
 
 ### A. How to Add a New Soft Scorer
 To incentivize charging at stations that have cheaper solar energy tariffs during daylight hours, implement a custom `SolarTariffScorer`:
