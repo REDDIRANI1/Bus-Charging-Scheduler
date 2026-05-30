@@ -45,8 +45,8 @@ The sidebar has sliders to tune the 3 weights live — the simulation reruns ins
 
 ```bash
 # Clone and enter the repo
-git clone https://github.com/REDDIRANI1/-Bus-Charging-Scheduler.git
-cd -Bus-Charging-Scheduler
+git clone https://github.com/REDDIRANI1/Bus-Charging-Scheduler.git
+cd Bus-Charging-Scheduler
 
 # Create a virtual environment
 python3 -m venv .venv
