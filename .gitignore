@@ -30,8 +30,9 @@ ipython_config.py
 .kilocode/
 .opencode/
 
-# Project-specific ignores
+# Project-specific ignores (internal tooling only)
 openspec/
 commit.sh
 AGENTS.md
-scenarios/
+test_scenarios.py
+SDE_assesment_-_May_2026.pdf

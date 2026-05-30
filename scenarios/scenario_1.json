@@ -1,0 +1,194 @@
+{
+  "name": "Scenario 1 \u2014 Even Spacing",
+  "description": "Buses depart every 15 minutes in each direction starting 19:00. Baseline case.",
+  "network": {
+    "endpoints": [
+      "Bengaluru",
+      "Kochi"
+    ],
+    "stations": [
+      {
+        "id": "A",
+        "name": "Station A",
+        "chargers": 1,
+        "charging_time_minutes": 25
+      },
+      {
+        "id": "B",
+        "name": "Station B",
+        "chargers": 1,
+        "charging_time_minutes": 25
+      },
+      {
+        "id": "C",
+        "name": "Station C",
+        "chargers": 1,
+        "charging_time_minutes": 25
+      },
+      {
+        "id": "D",
+        "name": "Station D",
+        "chargers": 1,
+        "charging_time_minutes": 25
+      }
+    ],
+    "segments": [
+      {
+        "from": "Bengaluru",
+        "to": "A",
+        "distance_km": 100
+      },
+      {
+        "from": "A",
+        "to": "B",
+        "distance_km": 120
+      },
+      {
+        "from": "B",
+        "to": "C",
+        "distance_km": 100
+      },
+      {
+        "from": "C",
+        "to": "D",
+        "distance_km": 120
+      },
+      {
+        "from": "D",
+        "to": "Kochi",
+        "distance_km": 100
+      }
+    ]
+  },
+  "parameters": {
+    "bus_speed_kmh": 60,
+    "max_range_km": 240
+  },
+  "weights": {
+    "individual": 1.0,
+    "operator": 1.0,
+    "overall": 1.0
+  },
+  "buses": [
+    {
+      "id": "bus-BK-01",
+      "operator": "KPN",
+      "direction": "Bengaluru\u2192Kochi",
+      "departure": "19:00"
+    },
+    {
+      "id": "bus-BK-02",
+      "operator": "Freshbus",
+      "direction": "Bengaluru\u2192Kochi",
+      "departure": "19:15"
+    },
+    {
+      "id": "bus-BK-03",
+      "operator": "Flixbus",
+      "direction": "Bengaluru\u2192Kochi",
+      "departure": "19:30"
+    },
+    {
+      "id": "bus-BK-04",
+      "operator": "KPN",
+      "direction": "Bengaluru\u2192Kochi",
+      "departure": "19:45"
+    },
+    {
+      "id": "bus-BK-05",
+      "operator": "Freshbus",
+      "direction": "Bengaluru\u2192Kochi",
+      "departure": "20:00"
+    },
+    {
+      "id": "bus-BK-06",
+      "operator": "Flixbus",
+      "direction": "Bengaluru\u2192Kochi",
+      "departure": "20:15"
+    },
+    {
+      "id": "bus-BK-07",
+      "operator": "KPN",
+      "direction": "Bengaluru\u2192Kochi",
+      "departure": "20:30"
+    },
+    {
+      "id": "bus-BK-08",
+      "operator": "Freshbus",
+      "direction": "Bengaluru\u2192Kochi",
+      "departure": "20:45"
+    },
+    {
+      "id": "bus-BK-09",
+      "operator": "Flixbus",
+      "direction": "Bengaluru\u2192Kochi",
+      "departure": "21:00"
+    },
+    {
+      "id": "bus-BK-10",
+      "operator": "KPN",
+      "direction": "Bengaluru\u2192Kochi",
+      "departure": "21:15"
+    },
+    {
+      "id": "bus-KB-01",
+      "operator": "Freshbus",
+      "direction": "Kochi\u2192Bengaluru",
+      "departure": "19:00"
+    },
+    {
+      "id": "bus-KB-02",
+      "operator": "Flixbus",
+      "direction": "Kochi\u2192Bengaluru",
+      "departure": "19:15"
+    },
+    {
+      "id": "bus-KB-03",
+      "operator": "KPN",
+      "direction": "Kochi\u2192Bengaluru",
+      "departure": "19:30"
+    },
+    {
+      "id": "bus-KB-04",
+      "operator": "Freshbus",
+      "direction": "Kochi\u2192Bengaluru",
+      "departure": "19:45"
+    },
+    {
+      "id": "bus-KB-05",
+      "operator": "Flixbus",
+      "direction": "Kochi\u2192Bengaluru",
+      "departure": "20:00"
+    },
+    {
+      "id": "bus-KB-06",
+      "operator": "KPN",
+      "direction": "Kochi\u2192Bengaluru",
+      "departure": "20:15"
+    },
+    {
+      "id": "bus-KB-07",
+      "operator": "Freshbus",
+      "direction": "Kochi\u2192Bengaluru",
+      "departure": "20:30"
+    },
+    {
+      "id": "bus-KB-08",
+      "operator": "Flixbus",
+      "direction": "Kochi\u2192Bengaluru",
+      "departure": "20:45"
+    },
+    {
+      "id": "bus-KB-09",
+      "operator": "KPN",
+      "direction": "Kochi\u2192Bengaluru",
+      "departure": "21:00"
+    },
+    {
+      "id": "bus-KB-10",
+      "operator": "Freshbus",
+      "direction": "Kochi\u2192Bengaluru",
+      "departure": "21:15"
+    }
+  ]
+}
