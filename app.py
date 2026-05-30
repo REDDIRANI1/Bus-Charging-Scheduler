@@ -70,25 +70,28 @@ def op_color(op: str) -> str:
 
 
 # ─────────────────────────────────────────────────────────────
-# HEADER
-# ─────────────────────────────────────────────────────────────
-st.title("⚡ VoltTransit — Bus Charging Scheduler")
-st.markdown("**Bidirectional route:** Bengaluru ↔ Kochi · 540 km · 4 intermediate charging stations (A, B, C, D)")
-st.divider()
-
-# ─────────────────────────────────────────────────────────────
-# SCENARIO PICKER (spec: must be at top)
+# HEADER & SCENARIO PICKER
 # ─────────────────────────────────────────────────────────────
 scenarios = list_available_scenarios()
 if not scenarios:
     st.error("No scenario files found in `scenarios/` directory.")
     st.stop()
 
-selected_file = st.selectbox(
-    "🗂️ Select Scenario",
-    scenarios,
-    format_func=lambda x: x.replace(".json", "").replace("_", " ").title(),
-)
+# Elegant columns to prevent full-width stretching and align selector with header
+h_col1, h_col2 = st.columns([3, 1], gap="medium")
+
+with h_col1:
+    st.title("⚡ VoltTransit — Bus Charging Scheduler")
+    st.markdown("**Bidirectional route:** Bengaluru ↔ Kochi · 540 km · 4 intermediate charging stations (A, B, C, D)")
+
+with h_col2:
+    st.write("") # spacer to align vertically with title
+    selected_file = st.selectbox(
+        "🗂️ Select Scenario",
+        scenarios,
+        format_func=lambda x: x.replace(".json", "").replace("_", " ").title(),
+    )
+
 scenario_data = load_scenario(selected_file)
 
 # ─────────────────────────────────────────────────────────────
@@ -164,22 +167,92 @@ k3.metric("⏱️ Avg Trip",      f"{avg_trip:.0f} min")
 k4.metric("⏳ Total Wait",    f"{total_wait} min")
 k5.metric("🔴 Max Bus Wait",  f"{max_wait} min")
 
-# Route diagram (pure text)
+# Route diagram (Visual Column-based layout)
 st.divider()
-st.caption("Route map:")
-route_parts = []
-for i, node in enumerate(route.nodes_sequence):
-    if node in endpoints:
-        route_parts.append(f"**{node}**")
-    else:
-        stn = route.stations[node]
-        served = len(stn.committed_events)
-        route_parts.append(f"🔋 **{node}** ({stn.name}, {served} buses)")
-    if i < len(route.nodes_sequence) - 1:
-        dist = route.get_distance(route.nodes_sequence[i], route.nodes_sequence[i + 1])
-        route_parts.append(f"──{int(dist)}km──")
+st.subheader("🗺️ Route Map")
 
-st.markdown("  ".join(route_parts))
+num_nodes = len(route.nodes_sequence)
+col_specs = []
+for i in range(num_nodes):
+    col_specs.append(4)  # Node columns
+    if i < num_nodes - 1:
+        col_specs.append(2)  # Edge columns
+
+cols = st.columns(col_specs)
+col_idx = 0
+
+for i, node in enumerate(route.nodes_sequence):
+    with cols[col_idx]:
+        if node in endpoints:
+            st.markdown(
+                f"""
+                <div style="
+                    text-align: center; 
+                    padding: 12px; 
+                    border: 1px solid #475569; 
+                    border-radius: 8px; 
+                    background-color: #1e293b; 
+                    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+                    min-height: 100px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                ">
+                    <span style="font-size: 1.4rem; margin-bottom: 4px;">🏢</span>
+                    <strong style="font-size: 1.1rem; color: #f8fafc; display: block;">{node}</strong>
+                    <span style="font-size: 0.8rem; color: #94a3b8; font-weight: 500;">Terminal</span>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        else:
+            stn = route.stations[node]
+            served = len(stn.committed_events)
+            st.markdown(
+                f"""
+                <div style="
+                    text-align: center; 
+                    padding: 12px; 
+                    border: 1px solid #38bdf8; 
+                    border-radius: 8px; 
+                    background-color: #0f172a; 
+                    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+                    min-height: 100px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                ">
+                    <span style="font-size: 1.4rem; margin-bottom: 4px;">🔋</span>
+                    <strong style="font-size: 1.1rem; color: #38bdf8; display: block;">Station {node}</strong>
+                    <span style="font-size: 0.8rem; color: #94a3b8; font-weight: 500;">{stn.name}</span>
+                    <span style="font-size: 0.85rem; color: #38bdf8; font-weight: 600; margin-top: 4px;">{served} buses served</span>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+    col_idx += 1
+
+    if i < num_nodes - 1:
+        dist = route.get_distance(route.nodes_sequence[i], route.nodes_sequence[i + 1])
+        with cols[col_idx]:
+            st.markdown(
+                f"""
+                <div style="
+                    text-align: center; 
+                    display: flex; 
+                    flex-direction: column; 
+                    justify-content: center; 
+                    align-items: center; 
+                    height: 100px;
+                ">
+                    <span style="font-size: 0.85rem; color: #64748b; font-weight: 700; margin-bottom: 2px;">{int(dist)} km</span>
+                    <span style="font-size: 1.3rem; color: #475569; font-weight: bold; line-height: 1;">──▶</span>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        col_idx += 1
+
 st.divider()
 
 # ─────────────────────────────────────────────────────────────
