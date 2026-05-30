@@ -4,7 +4,7 @@ import os
 import pandas as pd
 from typing import Dict, Any, List
 
-from scheduler.models import Route, Station, Segment, Bus, time_to_minutes
+from scheduler.models import Route, Station, Segment, Bus, time_to_minutes, minutes_to_time
 from scheduler.engine import SchedulerEngine
 
 # -------------------------------------------------------------
