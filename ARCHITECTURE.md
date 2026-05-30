@@ -153,7 +153,7 @@ self.hard_constraints.append(MaxChargeStopsConstraint())
 
 ---
 
-## 5. Architectural Assumptions Made
+## 6. Architectural Assumptions Made
 
 1. **Deterministic Travel Speeds**: Buses travel at a constant, uniform speed (default 60 km/h) with zero traffic fluctuations, making travel times strictly proportional to distance.
 2. **Instant Battery Recharge on Charge End**: A bus's battery is instantly restored to its maximum range (default 240 km) upon completion of the configured charging duration (default 25 minutes).
