@@ -307,7 +307,7 @@ with tab1:
                 "Charging Stops": ", ".join(s["charging_plan"]) if s["charging_plan"] else "—",
             })
         df = pd.DataFrame(rows)
-        st.dataframe(df, use_container_width=True, hide_index=True, height=min(len(rows) * 42 + 60, 700))
+        st.dataframe(df, width='stretch', hide_index=True, height=min(len(rows) * 42 + 60, 700))
     else:
         st.info("No buses match the chosen filters.")
 
@@ -445,7 +445,7 @@ with tab3:
             }
             for s in scenario_data["network"]["stations"]
         ]
-        st.dataframe(pd.DataFrame(station_rows), use_container_width=True, hide_index=True)
+        st.dataframe(pd.DataFrame(station_rows), width='stretch', hide_index=True)
         
         # 3. Segments table
         st.markdown("##### 🛣️ Route Segments")
@@ -457,7 +457,7 @@ with tab3:
             }
             for seg in scenario_data["network"]["segments"]
         ]
-        st.dataframe(pd.DataFrame(segment_rows), use_container_width=True, hide_index=True)
+        st.dataframe(pd.DataFrame(segment_rows), width='stretch', hide_index=True)
 
         st.write("")
         # Collapsible Raw JSON block
@@ -477,7 +477,7 @@ with tab3:
         ]
         st.dataframe(
             pd.DataFrame(bus_rows),
-            use_container_width=True,
+            width='stretch',
             hide_index=True,
             height=min(len(bus_rows) * 42 + 60, 700),
         )

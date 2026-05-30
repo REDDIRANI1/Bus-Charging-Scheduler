@@ -6,7 +6,8 @@ The core challenge was making sure every bus gets a valid charging plan — neve
 
 ## 🔗 Live App
 
-👉 **[Open on Streamlit Cloud](<your-streamlit-url-here>)**
+👉 **[Open on Streamlit Cloud](https://your-app-name.streamlit.app)**  
+> ⚠️ _Update this URL after deploying to Streamlit Community Cloud._
 
 ---
 
@@ -44,8 +45,8 @@ The sidebar has sliders to tune the 3 weights live — the simulation reruns ins
 
 ```bash
 # Clone and enter the repo
-git clone <repo-url>
-cd bus-charging-scheduler
+git clone https://github.com/REDDIRANI1/-Bus-Charging-Scheduler.git
+cd -Bus-Charging-Scheduler
 
 # Create a virtual environment
 python3 -m venv .venv
