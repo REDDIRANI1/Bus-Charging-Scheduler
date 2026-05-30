@@ -6,8 +6,7 @@ The core challenge was making sure every bus gets a valid charging plan — neve
 
 ## 🔗 Live App
 
-👉 **[Open on Streamlit Cloud](https://your-app-name.streamlit.app)**  
-> ⚠️ _Update this URL after deploying to Streamlit Community Cloud._
+👉 **[Open on Streamlit Cloud](https://bus-charging-scheduler-u3xxexqnln9i6mbxvav4i6.streamlit.app/)**
 
 ---
 
