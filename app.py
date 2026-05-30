@@ -418,18 +418,51 @@ with tab3:
     c_l, c_r = st.columns(2, gap="large")
 
     with c_l:
-        st.markdown("#### 🌐 Network, Parameters & Weights")
-        st.json({
-            "name":        scenario_data["name"],
-            "description": scenario_data["description"],
-            "network": {
-                "endpoints": scenario_data["network"]["endpoints"],
-                "stations":  scenario_data["network"]["stations"],
-                "segments":  scenario_data["network"]["segments"],
-            },
-            "parameters": scenario_data["parameters"],
-            "weights":    scenario_data["weights"],
-        })
+        st.markdown("#### ⚙️ Physical Parameters & Topology")
+        
+        # 1. Parameter Cards
+        p_c1, p_c2 = st.columns(2)
+        with p_c1:
+            with st.container(border=True):
+                st.markdown("**⚡ Physical Parameters**")
+                st.markdown(f"🚌 Bus Speed: **{scenario_data['parameters'].get('bus_speed_kmh', 60)} km/h**")
+                st.markdown(f"🔋 Battery Range: **{scenario_data['parameters'].get('max_range_km', 240)} km**")
+        with p_c2:
+            with st.container(border=True):
+                st.markdown("**🎛️ Default Weights**")
+                st.markdown(f"- Individual Wait: **{scenario_data['weights'].get('individual', 1.0):.1f}**")
+                st.markdown(f"- Operator Coordination: **{scenario_data['weights'].get('operator', 1.0):.1f}**")
+                st.markdown(f"- Overall Network: **{scenario_data['weights'].get('overall', 1.0):.1f}**")
+        
+        # 2. Stations table
+        st.markdown("##### 🚉 Station Configuration")
+        station_rows = [
+            {
+                "ID": s["id"],
+                "Name": s["name"],
+                "Chargers": f"⚡ {s['chargers']}",
+                "Charging Time": f"⏱️ {s['charging_time_minutes']} min",
+            }
+            for s in scenario_data["network"]["stations"]
+        ]
+        st.dataframe(pd.DataFrame(station_rows), use_container_width=True, hide_index=True)
+        
+        # 3. Segments table
+        st.markdown("##### 🛣️ Route Segments")
+        segment_rows = [
+            {
+                "From": seg["from"],
+                "To": seg["to"],
+                "Distance": f"📍 {seg['distance_km']} km",
+            }
+            for seg in scenario_data["network"]["segments"]
+        ]
+        st.dataframe(pd.DataFrame(segment_rows), use_container_width=True, hide_index=True)
+
+        st.write("")
+        # Collapsible Raw JSON block
+        with st.expander("📁 View Raw JSON Data File", expanded=False):
+            st.json(scenario_data)
 
     with c_r:
         st.markdown("#### 🚌 Fleet Departure Timetable")
