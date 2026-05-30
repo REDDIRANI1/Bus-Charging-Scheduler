@@ -185,30 +185,32 @@ st.markdown(
     """
     <div class="header-container">
         <h1 class="header-title">⚡ VoltTransit</h1>
-        <div class="header-subtitle">Advanced Electric Fleet Simulation & Bidirectional Charging Scheduler</div>
+        <div class="header-subtitle">Bidirectional Bus Charging Scheduler</div>
     </div>
     """,
     unsafe_allow_html=True
 )
 
 # -------------------------------------------------------------
-# Sidebar Configuration
+# Scenario Dropdown — at the top of the page (per spec)
 # -------------------------------------------------------------
-st.sidebar.markdown("### 🛠️ Configuration")
-
-# Scenario Selection
 scenarios = list_available_scenarios()
 if not scenarios:
-    st.sidebar.error("No scenario configuration files found in 'scenarios/' directory.")
+    st.error("No scenario configuration files found in 'scenarios/' directory.")
     st.stop()
 
-selected_file = st.sidebar.selectbox(
-    "Select Simulation Scenario",
+selected_file = st.selectbox(
+    "Select Scenario",
     scenarios,
     format_func=lambda x: x.replace(".json", "").replace("_", " ").title()
 )
 
 scenario_data = load_scenario(selected_file)
+
+# -------------------------------------------------------------
+# Sidebar — weights and parameters only
+# -------------------------------------------------------------
+st.sidebar.markdown("### 🛠️ Configuration")
 
 # Load weight configurations
 default_weights = scenario_data.get("weights", {"individual": 1.0, "operator": 1.0, "overall": 1.0})
@@ -300,40 +302,8 @@ schedules = engine.schedule_all(buses)
 # -------------------------------------------------------------
 # Main Application Content & Tabs
 # -------------------------------------------------------------
-st.subheader(f"📊 {scenario_data['name']}")
-st.write(f"*{scenario_data['description']}*")
-
-# Compute overall metrics
-total_buses = len(schedules)
-total_wait = sum(s["total_wait_minutes"] for s in schedules)
-avg_wait = total_wait / total_buses if total_buses > 0 else 0
-max_wait = max(s["total_wait_minutes"] for s in schedules) if total_buses > 0 else 0
-total_trip = sum(s["total_trip_minutes"] for s in schedules)
-avg_trip = total_trip / total_buses if total_buses > 0 else 0
-
-st.markdown(
-    f"""
-    <div class="kpi-container">
-        <div class="kpi-card">
-            <div class="kpi-value">{total_buses}</div>
-            <div class="kpi-label">Buses Scheduled</div>
-        </div>
-        <div class="kpi-card">
-            <div class="kpi-value">{avg_wait:.1f} m</div>
-            <div class="kpi-label">Avg Queue Wait</div>
-        </div>
-        <div class="kpi-card">
-            <div class="kpi-value">{max_wait} m</div>
-            <div class="kpi-label">Max Queue Wait</div>
-        </div>
-        <div class="kpi-card">
-            <div class="kpi-value">{avg_trip:.1f} m</div>
-            <div class="kpi-label">Avg Trip Time</div>
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+st.markdown(f"**{scenario_data['name']}** — *{scenario_data['description']}*")
+st.markdown("---")
 
 tab1, tab2, tab3 = st.tabs(["🕒 Per-Bus Timetable", "🚉 Per-Station Queues", "📁 Scenario Inputs"])
 
