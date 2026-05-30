@@ -38,3 +38,4 @@ test_scenarios.py
 SDE_assesment_-_May_2026.pdf
 SUBMISSION_NOTES.md
 scratch/
+.pytest_cache/
